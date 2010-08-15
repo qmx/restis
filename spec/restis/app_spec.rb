@@ -6,6 +6,12 @@ describe Restis::App do
 		Restis::App
 	end
 
+	before(:suite) do
+		redis = Redis.new
+		redis.keys.each do |key|
+			redis.del key
+		end
+	end
 	it "should respond to /" do
 		get '/'
 		last_response.should be_ok
@@ -18,16 +24,14 @@ describe Restis::App do
 				last_response.should be_successful
 			end
 			it "should create a new queue on post" do
-				post '/q/order/'
-				last_response.should be_ok
+				post '/q/order'
 				get '/q'
 				last_response.body.should =~ /order/
 			end
 			it "should get the head of the queue" do
-				post '/q/order', :id => 3
-				last_response.should be_ok
+				put '/q/order', {'id' => '3'}
 				get '/q/order'
-				last_response.body.should == "{'id': 3}"
+				last_response.body.should == "{\"id\":\"3\"}"
 			end
 		end
 	end

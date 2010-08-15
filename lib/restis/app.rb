@@ -1,11 +1,11 @@
 module Restis
-
 	class App < Sinatra::Base
 
 		QUEUES_KEY = "queues"
+		@@redis = Redis.new
 
 		def redis
-			Redis.new
+			@@redis
 		end
 
 		get '/' do
@@ -17,14 +17,18 @@ module Restis
 		end
 
 		get '/q/:queue' do |queue|
-			r = redis
-			r.blpop(queue, 100)
+			result = redis.lpop(queue)
 		end
 
-		post '/q/:queue/?' do |queue|
-			r = redis
-			r.sadd(QUEUES_KEY, queue)
-			r.rpush(queue, params['splat'].to_s)
+		post '/q/:queue' do |queue|
+			redis.sadd(QUEUES_KEY, queue)
+		end
+
+		put '/q/:queue' do |queue|
+			redis.sadd(QUEUES_KEY, queue)
+			par = params.dup
+			par.delete("queue")
+			redis.rpush(queue, par.to_json)
 		end
 	end
 end
