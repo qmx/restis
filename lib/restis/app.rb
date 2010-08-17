@@ -22,6 +22,7 @@ module Restis
 
 		get '/q/:queue' do |queue|
 			result = redis.lpop(queue)
+			result || halt(404)
 		end
 
 		post '/q/:queue' do |queue|
