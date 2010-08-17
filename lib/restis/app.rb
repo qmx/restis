@@ -34,6 +34,7 @@ module Restis
 			par = params.dup
 			par.delete("queue")
 			redis.rpush(queue, par.to_json)
+			halt 200
 		end
 	end
 end
