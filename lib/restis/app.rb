@@ -13,7 +13,11 @@ module Restis
 		end
 
 		get '/q/?' do
-			result = redis.smembers(QUEUES_KEY)
+			result = []
+			redis.smembers(QUEUES_KEY).each do |queue|
+				result << ({queue => redis.llen(queue)})
+			end
+			{:queues => result}.to_json
 		end
 
 		get '/q/:queue' do |queue|
