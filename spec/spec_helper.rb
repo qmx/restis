@@ -3,10 +3,10 @@ require 'init'
 Bundler.require :test
 require 'sinatra'
 
-require 'spec'
+require 'rspec'
 require 'rack/test'
 
-Spec::Runner.configure do |conf|
+Rspec.configure do |conf|
   conf.include Rack::Test::Methods
 end
 
